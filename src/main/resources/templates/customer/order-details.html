@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main :: head('Order Tracking #' + ${order.orderNumber} + ' - Foodie')}"></head>
+<body class="bg-light">
+
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+    <div th:replace="~{layout/main :: alerts}"></div>
+
+    <main class="container py-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <div>
+                <a th:href="@{/orders}" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left"></i> Back to Orders</a>
+                <h2 class="fw-bold mb-0 mt-1">Order <span class="text-primary" th:text="${order.orderNumber}">ORD-1001</span></h2>
+            </div>
+            <div>
+                <!-- Conditional Order Cancellation Button (allowed only in PENDING or CONFIRMED) -->
+                <button th:if="${order.canBeCancelled}" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                    <i class="bi bi-x-circle"></i> Cancel Order
+                </button>
+            </div>
+        </div>
+
+        <!-- Live Status Timeline Stepper (When not cancelled) -->
+        <div th:unless="${order.orderStatus.name() == 'CANCELLED'}" class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
+            <h5 class="fw-bold mb-4 text-center">Live Fulfillment Progress</h5>
+            <div class="status-timeline">
+                <!-- Step 1: Confirmed -->
+                <div class="timeline-step completed">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <!-- Step 2: Preparing -->
+                <div class="timeline-step" th:classappend="${order.orderStatus.name() == 'PREPARING' or order.orderStatus.name() == 'OUT_FOR_DELIVERY' or order.orderStatus.name() == 'DELIVERED' ? 'completed' : ''}">
+                    <i class="bi bi-fire"></i>
+                </div>
+                <!-- Step 3: Out for Delivery -->
+                <div class="timeline-step" th:classappend="${order.orderStatus.name() == 'OUT_FOR_DELIVERY' or order.orderStatus.name() == 'DELIVERED' ? 'completed' : ''}">
+                    <i class="bi bi-bicycle"></i>
+                </div>
+                <!-- Step 4: Delivered -->
+                <div class="timeline-step" th:classappend="${order.orderStatus.name() == 'DELIVERED' ? 'completed' : ''}">
+                    <i class="bi bi-house-heart"></i>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between text-center small text-muted px-2">
+                <span class="fw-bold text-dark">Confirmed</span>
+                <span th:classappend="${order.orderStatus.name() == 'PREPARING' ? 'fw-bold text-primary' : ''}">Kitchen Prep</span>
+                <span th:classappend="${order.orderStatus.name() == 'OUT_FOR_DELIVERY' ? 'fw-bold text-primary' : ''}">On The Way</span>
+                <span th:classappend="${order.orderStatus.name() == 'DELIVERED' ? 'fw-bold text-success' : ''}">Delivered</span>
+            </div>
+        </div>
+
+        <!-- Cancelled State Alert Banner -->
+        <div th:if="${order.orderStatus.name() == 'CANCELLED'}" class="alert alert-danger border-0 rounded-4 p-4 shadow-sm mb-4">
+            <h5 class="fw-bold mb-1"><i class="bi bi-x-octagon-fill"></i> Order Cancelled</h5>
+            <p class="mb-0 small">
+                Reason: <strong th:text="${order.cancellationReason ?: 'Cancelled by user'}">Reason</strong>. 
+                Any reserved stock has been credited back to inventory.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Itemized Breakdown -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h5 class="fw-bold mb-3">Itemized Dishes</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="text-muted small">
+                                <tr>
+                                    <th>Dish</th>
+                                    <th>Unit Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${order.items}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img th:src="${item.foodImageUrl ?: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=80&q=80'}"
+                                                 class="rounded-3 me-3" style="width: 48px; height: 48px; object-fit: cover;" th:alt="${item.foodName}">
+                                            <span class="fw-bold" th:text="${item.foodName}">Food Name</span>
+                                        </div>
+                                    </td>
+                                    <td th:text="${'$' + item.unitPrice}">$14.99</td>
+                                    <td th:text="${item.quantity}">1</td>
+                                    <td class="text-end fw-bold" th:text="${'$' + item.subtotal}">$14.99</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receipt & Delivery Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                    <h5 class="fw-bold mb-3">Delivery Information</h5>
+                    <p class="small text-muted mb-1"><i class="bi bi-person"></i> Recipient: <strong th:text="${order.customerName}">John Doe</strong></p>
+                    <p class="small text-muted mb-1"><i class="bi bi-telephone"></i> Phone: <strong th:text="${order.contactPhone}">+1-555-019-2831</strong></p>
+                    <p class="small text-muted mb-1"><i class="bi bi-geo-alt"></i> Address: <strong th:text="${order.deliveryAddress}">742 Evergreen Terrace</strong></p>
+                    <p th:if="${order.deliveryNotes}" class="small text-muted mb-0"><i class="bi bi-chat-left-text"></i> Notes: <span th:text="${order.deliveryNotes}">Notes</span></p>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h5 class="fw-bold mb-3">Payment Receipt</h5>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Subtotal</span>
+                        <span th:text="${'$' + order.subtotalAmount}">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Tax (5%)</span>
+                        <span th:text="${'$' + order.taxAmount}">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Delivery Fee</span>
+                        <span th:text="${'$' + order.deliveryFee}">$3.50</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+                        <span>Total Paid</span>
+                        <span class="text-primary" th:text="${'$' + order.totalAmount}">$0.00</span>
+                    </div>
+                    <div class="p-2 bg-light rounded small text-muted">
+                        <div>Method: <strong>Card Ending in <span th:text="${order.cardLastFour ?: '4242'}">4242</span></strong></div>
+                        <div>Txn: <code th:text="${order.transactionId}">TXN-998124</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Cancellation Confirmation Modal -->
+    <div th:if="${order.canBeCancelled}" class="modal fade" id="cancelOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-octagon-fill"></i> Confirm Cancellation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body py-3">
+                        <p class="small text-muted">
+                            Are you sure you want to cancel Order <strong>#<span th:text="${order.orderNumber}">ORD-1001</span></strong>? 
+                            This action cannot be undone. Any reserved dishes will be returned to restaurant inventory.
+                        </p>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Reason for Cancellation (Optional)</label>
+                            <input type="text" name="reason" class="form-control" placeholder="e.g. Changed my mind, placed by mistake">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Keep Order</button>
+                        <button type="submit" class="btn btn-danger btn-sm px-3">Yes, Cancel Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{layout/main :: footer}"></footer>
+</body>
+</html>

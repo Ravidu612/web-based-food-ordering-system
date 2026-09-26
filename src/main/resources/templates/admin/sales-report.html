@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/admin-layout :: head('Sales Report - Admin')}"></head>
+<body>
+
+    <nav th:replace="~{layout/admin-layout :: admin-navbar}"></nav>
+
+    <div class="admin-wrapper">
+        <div th:replace="~{layout/admin-layout :: admin-sidebar('sales')}"></div>
+
+        <div class="admin-content">
+            <div th:replace="~{layout/main :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Sales Performance Report</h3>
+                    <p class="text-muted small mb-0">Revenue trends by period, order volume analytics, and transactional records</p>
+                </div>
+                <!-- Date Range Filter -->
+                <form th:action="@{/admin/reports/sales}" method="get" class="d-flex align-items-center gap-2">
+                    <input type="date" name="startDate" th:value="${startDate}" class="form-control form-control-sm" style="width: 145px;">
+                    <span class="text-muted small">to</span>
+                    <input type="date" name="endDate" th:value="${endDate}" class="form-control form-control-sm" style="width: 145px;">
+                    <button type="submit" class="btn btn-primary-custom btn-sm px-3">Apply</button>
+                </form>
+            </div>
+
+            <!-- KPI Revenue Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-success-subtle text-success"><i class="bi bi-currency-dollar"></i></div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (report.totalGrossRevenue ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Gross Revenue</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-primary-subtle text-primary"><i class="bi bi-bag-check"></i></div>
+                        <div>
+                            <div class="kpi-value" th:text="${report.totalOrdersCount ?: '0'}">0</div>
+                            <div class="kpi-label">Total Orders</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-warning-subtle text-warning"><i class="bi bi-receipt"></i></div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (report.averageOrderValue ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Avg. Order Value</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-info-subtle text-info"><i class="bi bi-percent"></i></div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (report.grossMargin ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Gross Margin (Revenue - COGS)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Transaction Breakdown -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <h6 class="fw-bold mb-3">Orders In Range (<span th:text="${#temporals.format(startDate, 'MMM dd')}">Start</span> - <span th:text="${#temporals.format(endDate, 'MMM dd, yyyy')}">End</span>)</h6>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="text-muted small">
+                            <tr>
+                                <th>Order Ref</th>
+                                <th>Timestamp</th>
+                                <th>Customer</th>
+                                <th>Status</th>
+                                <th>Subtotal</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ord : ${report.orders}">
+                                <td class="fw-bold text-primary" th:text="${ord.orderNumber}">ORD-1001</td>
+                                <td class="small text-muted" th:text="${#temporals.format(ord.orderDate, 'MMM dd, yyyy HH:mm')}">Sep 01, 2026</td>
+                                <td th:text="${ord.customerName}">John Doe</td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success" th:text="${ord.orderStatus.name()}">DELIVERED</span>
+                                </td>
+                                <td class="text-muted" th:text="${'$' + ord.subtotalAmount}">$33.49</td>
+                                <td class="fw-bold text-success" th:text="${'$' + ord.totalAmount}">$38.66</td>
+                            </tr>
+                            <tr th:if="${report.orders == null or report.orders.isEmpty()}">
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="bi bi-calendar-x display-6 d-block mb-2 opacity-50"></i>
+                                    No sales transactions recorded for selected date range.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

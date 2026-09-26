@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/admin-layout :: head('Order Queue & Dispatch - Admin')}"></head>
+<body>
+
+    <nav th:replace="~{layout/admin-layout :: admin-navbar}"></nav>
+
+    <div class="admin-wrapper">
+        <div th:replace="~{layout/admin-layout :: admin-sidebar('orders')}"></div>
+
+        <div class="admin-content">
+            <div th:replace="~{layout/main :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Kitchen Order Queue</h3>
+                    <p class="text-muted small mb-0">Manage live order fulfillment milestones and delivery dispatching</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="text-muted small">
+                            <tr>
+                                <th>Order Ref</th>
+                                <th>Timestamp</th>
+                                <th>Customer</th>
+                                <th>Dishes Ordered</th>
+                                <th>Total</th>
+                                <th>Current Status</th>
+                                <th>Advance Milestone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td class="fw-bold text-primary" th:text="${order.orderNumber}">ORD-1001</td>
+                                <td class="small text-muted" th:text="${#temporals.format(order.orderDate, 'MMM dd, HH:mm')}">Sep 03</td>
+                                <td>
+                                    <div class="fw-semibold" th:text="${order.customerName}">Customer</div>
+                                    <small class="text-muted" th:text="${order.contactPhone}">+1 555</small>
+                                </td>
+                                <td>
+                                    <div th:each="item : ${order.items}" class="small">
+                                        <span th:text="${item.quantity + 'x ' + item.foodName}">1x Dish</span>
+                                    </div>
+                                </td>
+                                <td class="fw-bold fs-6" th:text="${'$' + order.totalAmount}">$38.66</td>
+                                <td>
+                                    <span th:switch="${order.orderStatus.name()}">
+                                        <span th:case="'DELIVERED'" class="badge bg-success">Delivered</span>
+                                        <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
+                                        <span th:case="'PREPARING'" class="badge bg-warning text-dark">Preparing</span>
+                                        <span th:case="'OUT_FOR_DELIVERY'" class="badge bg-info">Out for Delivery</span>
+                                        <span th:case="*" class="badge bg-primary">Confirmed</span>
+                                    </span>
+                                </td>
+                                <td style="width: 200px;">
+                                    <form th:action="@{/admin/orders/update-status}" method="post" class="d-flex gap-1" th:if="${order.orderStatus.name() != 'DELIVERED' and order.orderStatus.name() != 'CANCELLED'}">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <input type="hidden" name="orderId" th:value="${order.id}">
+                                        <select name="newStatus" class="form-select form-select-sm">
+                                            <option th:each="s : ${allStatuses}" th:value="${s.name()}" th:text="${s.name()}" th:selected="${s == order.orderStatus}"></option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary-custom btn-sm" title="Save Status">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                    <span th:if="${order.orderStatus.name() == 'DELIVERED'}" class="text-success small fw-semibold"><i class="bi bi-check2-circle"></i> Completed</span>
+                                    <span th:if="${order.orderStatus.name() == 'CANCELLED'}" class="text-danger small fw-semibold"><i class="bi bi-slash-circle"></i> Terminated</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

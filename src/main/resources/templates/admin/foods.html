@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/admin-layout :: head('Manage Food Items - Admin')}"></head>
+<body>
+
+    <nav th:replace="~{layout/admin-layout :: admin-navbar}"></nav>
+
+    <div class="admin-wrapper">
+        <div th:replace="~{layout/admin-layout :: admin-sidebar('foods')}"></div>
+
+        <div class="admin-content">
+            <div th:replace="~{layout/main :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Food Dishes Management</h3>
+                    <p class="text-muted small mb-0">Add, edit pricing, discounts, and toggle dish availability</p>
+                </div>
+                <button type="button" class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#addFoodModal">
+                    <i class="bi bi-plus-lg"></i> Add New Food Item
+                </button>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="text-muted small">
+                            <tr>
+                                <th>Dish</th>
+                                <th>Category</th>
+                                <th>Selling Price</th>
+                                <th>Cost (COGS)</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="food : ${foods}">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img th:src="${food.imageUrl ?: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=60&q=80'}"
+                                             class="rounded-3 me-2" style="width: 44px; height: 44px; object-fit: cover;" th:alt="${food.name}">
+                                        <div>
+                                            <h6 class="fw-bold mb-0" th:text="${food.name}">Food Name</h6>
+                                            <small th:if="${food.isPromotional}" class="badge bg-danger-subtle text-danger" th:text="${food.discountPercentage + '% OFF'}">Promo</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:text="${food.categoryName}">Category</span>
+                                </td>
+                                <td class="fw-bold text-primary" th:text="${'$' + food.price}">$14.99</td>
+                                <td class="text-muted" th:text="${'$' + (food.costPrice ?: '0.00')}">$4.50</td>
+                                <td>
+                                    <span th:classappend="${food.isLowStock ? 'badge bg-warning text-dark' : 'badge bg-success-subtle text-success'}"
+                                          th:text="${food.stockQuantity + ' Units'}">50 Units</span>
+                                </td>
+                                <td>
+                                    <span th:if="${food.isAvailable}" class="badge bg-success">Available</span>
+                                    <span th:unless="${food.isAvailable}" class="badge bg-secondary">Disabled</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" th:data-bs-target="${'#editFoodModal' + food.id}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <form th:action="@{/admin/foods/toggle/{id}(id=${food.id})}" method="post" class="d-inline">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                            <button type="submit" class="btn btn-outline-warning" title="Toggle Availability">
+                                                <i class="bi bi-power"></i>
+                                            </button>
+                                        </form>
+                                        <form th:action="@{/admin/foods/delete/{id}(id=${food.id})}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to completely delete this food item?');">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete Food">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Edit Food Modal -->
+                                    <div class="modal fade" th:id="${'editFoodModal' + food.id}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow rounded-4">
+                                                <form th:action="@{/admin/foods/update/{id}(id=${food.id})}" method="post">
+                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                    <div class="modal-header border-0">
+                                                        <h5 class="modal-title fw-bold">Edit Food Item</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Dish Name</label>
+                                                            <input type="text" name="name" class="form-control" th:value="${food.name}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Category</label>
+                                                            <select name="categoryId" class="form-select" required>
+                                                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${c.id == food.categoryId}"></option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="row g-2 mb-3">
+                                                            <div class="col-6">
+                                                                <label class="form-label small fw-semibold">Selling Price ($)</label>
+                                                                <input type="number" step="0.01" name="price" class="form-control" th:value="${food.price}" required>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label small fw-semibold">Cost Price (COGS) ($)</label>
+                                                                <input type="number" step="0.01" name="costPrice" class="form-control" th:value="${food.costPrice}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row g-2 mb-3">
+                                                            <div class="col-6">
+                                                                <label class="form-label small fw-semibold">Prep Time (Mins)</label>
+                                                                <input type="number" name="prepTimeMinutes" class="form-control" th:value="${food.prepTimeMinutes}">
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label small fw-semibold">Current Stock Qty</label>
+                                                                <input type="number" name="stockQuantity" class="form-control" th:value="${food.stockQuantity}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Description</label>
+                                                            <textarea name="description" class="form-control" rows="2" th:text="${food.description}" required></textarea>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Image URL</label>
+                                                            <input type="text" name="imageUrl" class="form-control" th:value="${food.imageUrl}">
+                                                        </div>
+                                                        <div class="row g-2">
+                                                            <div class="col-6">
+                                                                <div class="form-check">
+                                                                    <input type="hidden" name="isAvailable" value="false">
+                                                                    <input class="form-check-input" type="checkbox" name="isAvailable" value="true" th:checked="${food.isAvailable}" th:id="${'availableCheck' + food.id}">
+                                                                    <label class="form-check-label small" th:for="${'availableCheck' + food.id}">Available to Customers</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="form-check">
+                                                                    <input type="hidden" name="isPromotional" value="false">
+                                                                    <input class="form-check-input" type="checkbox" name="isPromotional" value="true" th:checked="${food.isPromotional}" th:id="${'promoCheck' + food.id}">
+                                                                    <label class="form-check-label small" th:for="${'promoCheck' + food.id}">Promotional Item</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-3">
+                                                            <input type="number" step="0.01" name="discountPercentage" class="form-control form-control-sm" placeholder="Discount %" th:value="${food.discountPercentage}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-0">
+                                                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary-custom btn-sm">Update Dish</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Food Modal -->
+    <div class="modal fade" id="addFoodModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <form th:action="@{/admin/foods/add}" th:object="${foodDto}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold">Create New Food Dish</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Dish Name</label>
+                            <input type="text" th:field="*{name}" class="form-control" placeholder="e.g. Smoky Truffle Burger" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Category</label>
+                            <select th:field="*{categoryId}" class="form-select" required>
+                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold">Selling Price ($)</label>
+                                <input type="number" step="0.01" th:field="*{price}" class="form-control" placeholder="14.99" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold">Cost Price ($)</label>
+                                <input type="number" step="0.01" th:field="*{costPrice}" class="form-control" placeholder="4.50">
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold">Prep Time (Mins)</label>
+                                <input type="number" th:field="*{prepTimeMinutes}" class="form-control" value="15">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold">Initial Stock Qty</label>
+                                <input type="number" th:field="*{stockQuantity}" class="form-control" value="50">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Description</label>
+                            <textarea th:field="*{description}" class="form-control" rows="2" placeholder="List key ingredients and flavor notes" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Image URL (Optional)</label>
+                            <input type="text" th:field="*{imageUrl}" class="form-control" placeholder="https://...">
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input type="hidden" name="isAvailable" value="false">
+                                    <input class="form-check-input" type="checkbox" name="isAvailable" value="true" checked>
+                                    <label class="form-check-label small">Available to Customers</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input type="hidden" name="isPromotional" value="false">
+                                    <input class="form-check-input" type="checkbox" name="isPromotional" value="true">
+                                    <label class="form-check-label small">Promotional Item</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <input type="number" step="0.01" th:field="*{discountPercentage}" class="form-control form-control-sm" placeholder="Discount %">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-custom btn-sm">Create Dish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/admin-layout :: head('Admin Dashboard - Foodie')}"></head>
+<body>
+
+    <nav th:replace="~{layout/admin-layout :: admin-navbar}"></nav>
+
+    <div class="admin-wrapper">
+        <!-- Sidebar Navigation -->
+        <div th:replace="~{layout/admin-layout :: admin-sidebar('dashboard')}"></div>
+
+        <!-- Main Dashboard Content -->
+        <div class="admin-content">
+            <div th:replace="~{layout/main :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Executive Dashboard</h3>
+                    <p class="text-muted small mb-0">Real-time operational overview, revenues, and inventory status</p>
+                </div>
+                <div>
+                    <a th:href="@{/admin/orders}" class="btn btn-primary-custom btn-sm">
+                        <i class="bi bi-receipt"></i> View Active Orders
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI Summary Cards Grid -->
+            <div class="row g-3 mb-4">
+                <!-- KPI 1: Today's Revenue -->
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-success-subtle text-success">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (summary.todayRevenue ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Today's Revenue</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 2: Active Orders -->
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-primary-subtle text-primary">
+                            <i class="bi bi-fire"></i>
+                        </div>
+                        <div>
+                            <div class="kpi-value" th:text="${summary.activeOrdersCount ?: '0'}">0</div>
+                            <div class="kpi-label">Active Orders</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 3: Monthly Net Profit -->
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-info-subtle text-info">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (summary.monthNetProfit ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Monthly Net Profit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 4: Low Stock Alerts -->
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-warning-subtle text-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <div class="kpi-value" th:text="${summary.lowStockCount ?: '0'}">0</div>
+                            <div class="kpi-label">Low Stock Alerts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Recent Orders Queue -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0">Incoming Orders Stream</h5>
+                            <a th:href="@{/admin/orders}" class="btn btn-link btn-sm text-decoration-none">All Orders <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="text-muted small">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="order : ${recentOrders}">
+                                        <td class="fw-bold" th:text="${order.orderNumber}">ORD-1001</td>
+                                        <td th:text="${order.customerName}">John Doe</td>
+                                        <td class="fw-bold text-primary" th:text="${'$' + order.totalAmount}">$38.66</td>
+                                        <td>
+                                            <span class="badge bg-primary-subtle text-primary" th:text="${order.orderStatus.name()}">CONFIRMED</span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/admin/orders}" class="btn btn-sm btn-outline-secondary">Manage</a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${recentOrders == null or recentOrders.isEmpty()}">
+                                        <td colspan="5" class="text-center text-muted py-3">No recent orders logged.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Management Actions -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                        <h5 class="fw-bold mb-3">Quick Navigation</h5>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/admin/foods}" class="btn btn-outline-dark text-start p-3 rounded-3">
+                                <i class="bi bi-plus-circle text-primary me-2"></i> Manage Menu & Add Dishes
+                            </a>
+                            <a th:href="@{/admin/inventory}" class="btn btn-outline-dark text-start p-3 rounded-3">
+                                <i class="bi bi-box-seam text-warning me-2"></i> Inspect Stock & Replenish
+                            </a>
+                            <a th:href="@{/admin/reports/expenses}" class="btn btn-outline-dark text-start p-3 rounded-3">
+                                <i class="bi bi-cash-stack text-danger me-2"></i> Record Operating Expense
+                            </a>
+                            <a th:href="@{/admin/reports/profit}" class="btn btn-outline-dark text-start p-3 rounded-3">
+                                <i class="bi bi-file-earmark-bar-graph text-success me-2"></i> View Profit & Loss Summary
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

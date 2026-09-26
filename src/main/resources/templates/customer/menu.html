@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main :: head('Menu Catalog - Foodie')}"></head>
+<body class="bg-light">
+
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+    <div th:replace="~{layout/main :: alerts}"></div>
+
+    <div class="container py-4">
+        <!-- Search & Filter Controls Header -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="fw-bold mb-1"><i class="bi bi-book-half text-primary"></i> Explore Our Menu</h3>
+                    <p class="text-muted small mb-0">Browse delicious handcrafted meals tailored to your taste</p>
+                </div>
+                <div class="col-lg-6">
+                    <form th:action="@{/menu}" method="get" class="row g-2">
+                        <input type="hidden" name="categoryId" th:value="${selectedCategoryId}">
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Search burger, pizza, pasta...">
+                            </div>
+                        </div>
+                        <div class="col-sm-4 d-flex align-items-center">
+                            <div class="form-check me-2">
+                                <input class="form-check-input" type="checkbox" name="promotional" value="true" id="promotionalCheck" th:checked="${promotionalOnly}">
+                                <label class="form-check-label small fw-semibold" for="promotionalCheck">
+                                    Promos
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary-custom btn-sm px-3">Filter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Category Pills -->
+            <div class="mt-4 pt-3 border-top d-flex flex-wrap align-items-center">
+                <span class="text-muted small fw-bold me-2 mb-2">CATEGORIES:</span>
+                <a th:href="@{/menu(keyword=${keyword}, promotional=${promotionalOnly})}"
+                   class="category-pill" th:classappend="${selectedCategoryId == null ? 'active' : ''}">
+                    All Dishes
+                </a>
+                <a th:each="cat : ${categories}"
+                   th:href="@{/menu(categoryId=${cat.id}, keyword=${keyword}, promotional=${promotionalOnly})}"
+                   class="category-pill"
+                   th:classappend="${selectedCategoryId == cat.id ? 'active' : ''}"
+                   th:text="${cat.name}">
+                    Category
+                </a>
+            </div>
+        </div>
+
+        <!-- Food Items Grid -->
+        <div class="row g-4" th:if="${foods != null and !foods.isEmpty()}">
+            <div th:each="food : ${foods}" class="col-md-6 col-lg-4 col-xl-3">
+                <div class="food-card">
+                    <div class="food-card-img-wrapper">
+                        <span th:if="${food.isPromotional}" class="badge-promo" th:text="${food.discountPercentage + '% OFF'}">Promo</span>
+                        <span class="badge-prep"><i class="bi bi-clock"></i> <span th:text="${food.prepTimeMinutes + 'm'}">15m</span></span>
+                        <img th:src="${food.imageUrl ?: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'}" class="food-card-img" th:alt="${food.name}">
+                    </div>
+                    <div class="card-body p-3 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <small class="text-muted fw-semibold" th:text="${food.categoryName}">Category</small>
+                            <span th:if="${food.isLowStock}" class="badge bg-warning text-dark small">Limited Stock</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mt-1 mb-2">
+                            <a th:href="@{/foods/{id}(id=${food.id})}" class="text-dark text-decoration-none" th:text="${food.name}">Dish Name</a>
+                        </h6>
+                        <p class="small text-muted mb-3 flex-grow-1" th:text="${#strings.abbreviate(food.description, 80)}">Description</p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+                            <div>
+                                <span class="food-price" th:text="${'$' + food.effectivePrice}">$14.99</span>
+                                <span th:if="${food.isPromotional}" class="food-original-price" th:text="${'$' + food.price}">$16.99</span>
+                            </div>
+                            <form th:action="@{/cart/add}" method="post" class="m-0">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="foodId" th:value="${food.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-sm btn-primary-custom rounded-pill px-3">
+                                    <i class="bi bi-cart-plus"></i> Add
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Foods Found State -->
+        <div th:if="${foods == null or foods.isEmpty()}" class="card border-0 shadow-sm rounded-4 p-5 text-center my-4 bg-white">
+            <i class="bi bi-emoji-neutral text-muted display-4 mb-3"></i>
+            <h5 class="fw-bold">No Dishes Found</h5>
+            <p class="text-muted small">We couldn't find any dishes matching your active search or category filters.</p>
+            <div>
+                <a th:href="@{/menu}" class="btn btn-outline-custom">Reset All Filters</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{layout/main :: footer}"></footer>
+</body>
+</html>

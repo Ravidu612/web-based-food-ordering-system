@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main :: head('Contact Us - Foodie')}"></head>
+<body class="bg-light">
+
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+    <div th:replace="~{layout/main :: alerts}"></div>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+                    <h2 class="fw-bold mb-2">Get in Touch</h2>
+                    <p class="text-muted small mb-4">Have questions about an order or catering inquiries? Drop us a message.</p>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Your Name</label>
+                            <input type="text" class="form-control" placeholder="Jane Doe" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Your Email</label>
+                            <input type="email" class="form-control" placeholder="jane@example.com" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Subject</label>
+                            <input type="text" class="form-control" placeholder="Order inquiry / Feedback" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Message</label>
+                            <textarea class="form-control" rows="4" placeholder="How can our kitchen support you?" required></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="button" class="btn btn-primary-custom px-4 py-2" onclick="alert('Thank you for reaching out! Our team will respond shortly.');">
+                                <i class="bi bi-send-fill me-1"></i> Send Message
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/main :: footer}"></footer>
+</body>
+</html>

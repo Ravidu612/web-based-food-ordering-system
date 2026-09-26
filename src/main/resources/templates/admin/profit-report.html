@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/admin-layout :: head('Profit & Loss Statement - Admin')}"></head>
+<body>
+
+    <nav th:replace="~{layout/admin-layout :: admin-navbar}"></nav>
+
+    <div class="admin-wrapper">
+        <div th:replace="~{layout/admin-layout :: admin-sidebar('profit')}"></div>
+
+        <div class="admin-content">
+            <div th:replace="~{layout/main :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Profit &amp; Loss Statement</h3>
+                    <p class="text-muted small mb-0">Financial performance summary: gross margin, net profit, and expense breakdown</p>
+                </div>
+                <!-- Period Date Filter -->
+                <form th:action="@{/admin/reports/profit}" method="get" class="d-flex align-items-center gap-2">
+                    <input type="date" name="startDate" th:value="${startDate}" class="form-control form-control-sm" style="width: 145px;">
+                    <span class="text-muted small">to</span>
+                    <input type="date" name="endDate" th:value="${endDate}" class="form-control form-control-sm" style="width: 145px;">
+                    <button type="submit" class="btn btn-primary-custom btn-sm px-3">Apply</button>
+                </form>
+            </div>
+
+            <!-- P&L Summary KPIs -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-success-subtle text-success"><i class="bi bi-graph-up-arrow"></i></div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (report.totalRevenue ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Gross Sales Revenue</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-warning-subtle text-warning"><i class="bi bi-box-seam"></i></div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (report.totalCogs ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Cost of Goods Sold (COGS)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-danger-subtle text-danger"><i class="bi bi-graph-down-arrow"></i></div>
+                        <div>
+                            <div class="kpi-value" th:text="${'$' + (report.totalOperatingExpenses ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Operating Expenses</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"
+                             th:classappend="${report.isProfitable ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <div>
+                            <div class="kpi-value"
+                                 th:classappend="${report.isProfitable ? 'text-success' : 'text-danger'}"
+                                 th:text="${'$' + (report.netProfit ?: '0.00')}">$0.00</div>
+                            <div class="kpi-label">Net Profit / Loss</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P&L Formal Statement Table -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <h6 class="fw-bold mb-4 text-center text-uppercase text-muted small letter-spacing-1">
+                    Income Statement — <span th:text="${#temporals.format(startDate, 'MMM dd, yyyy')}">Start</span> to <span th:text="${#temporals.format(endDate, 'MMM dd, yyyy')}">End</span>
+                </h6>
+
+                <table class="table table-borderless align-middle mb-0" style="max-width: 600px; margin: 0 auto;">
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold text-uppercase text-primary small">Revenue</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3">Gross Sales Revenue</td>
+                            <td class="text-end fw-semibold text-success" th:text="${'$' + (report.totalRevenue ?: '0.00')}">$0.00</td>
+                        </tr>
+
+                        <tr><td colspan="2" class="py-2"></td></tr>
+
+                        <tr>
+                            <td class="fw-bold text-uppercase text-danger small">Cost of Goods Sold (COGS)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3">Ingredient Cost of Sold Dishes</td>
+                            <td class="text-end fw-semibold text-danger" th:text="${'($' + (report.totalCogs ?: '0.00') + ')'}">($0.00)</td>
+                        </tr>
+
+                        <tr><td colspan="2" class="py-1"><hr></td></tr>
+
+                        <tr class="fw-bold">
+                            <td class="ps-3">Gross Margin</td>
+                            <td class="text-end text-primary" th:text="${'$' + (report.totalRevenue.subtract(report.totalCogs) ?: '0.00')}">$0.00</td>
+                        </tr>
+
+                        <tr><td colspan="2" class="py-2"></td></tr>
+
+                        <tr>
+                            <td class="fw-bold text-uppercase text-danger small">Operating Expenses Logged</td>
+                            <td></td>
+                        </tr>
+                        <tr th:each="exp : ${report.expenseBreakdown}">
+                            <td class="ps-3 text-muted small" th:text="${exp.title + ' (' + exp.expenseCategory + ')'}">Expense</td>
+                            <td class="text-end text-danger small" th:text="${'($' + exp.amount + ')'}">($0.00)</td>
+                        </tr>
+                        <tr th:if="${report.expenseBreakdown == null or report.expenseBreakdown.isEmpty()}">
+                            <td class="ps-3 text-muted small">No operating expenses logged in this period</td>
+                            <td class="text-end text-muted small">$0.00</td>
+                        </tr>
+
+                        <tr class="table-light fw-bold border-top">
+                            <td>Total Operating Expenses</td>
+                            <td class="text-end text-danger" th:text="${'($' + (report.totalOperatingExpenses ?: '0.00') + ')'}">($0.00)</td>
+                        </tr>
+
+                        <tr><td colspan="2" class="py-1"><hr></td></tr>
+
+                        <tr class="fw-bold fs-5">
+                            <td>Net Profit / (Loss)</td>
+                            <td class="text-end"
+                                th:classappend="${report.isProfitable ? 'text-success' : 'text-danger'}"
+                                th:text="${'$' + (report.netProfit ?: '0.00')}">$0.00</td>
+                        </tr>
+                        <tr class="small text-muted">
+                            <td>Net Profit Margin</td>
+                            <td class="text-end fw-semibold" th:text="${(report.profitMarginPercentage ?: '0') + '%'}">0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4 p-3 bg-light rounded-3 small text-muted text-center">
+                    <i class="bi bi-info-circle"></i> Generated from live orders and operational expense ledger for the selected timeframe.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

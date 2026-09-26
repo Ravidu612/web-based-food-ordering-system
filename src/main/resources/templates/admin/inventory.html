@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/admin-layout :: head('Inventory Management - Admin')}"></head>
+<body>
+
+    <nav th:replace="~{layout/admin-layout :: admin-navbar}"></nav>
+
+    <div class="admin-wrapper">
+        <div th:replace="~{layout/admin-layout :: admin-sidebar('inventory')}"></div>
+
+        <div class="admin-content">
+            <div th:replace="~{layout/main :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Inventory & Stock Tracking</h3>
+                    <p class="text-muted small mb-0">Real-time dish ingredient stock levels and threshold alerts</p>
+                </div>
+                <div>
+                    <span th:if="${lowStockCount > 0}" class="badge bg-danger fs-6 px-3 py-2 rounded-pill">
+                        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${lowStockCount}">1</span> Low Stock Alerts
+                    </span>
+                    <span th:unless="${lowStockCount > 0}" class="badge bg-success-subtle text-success fs-6 px-3 py-2 rounded-pill">
+                        <i class="bi bi-check-circle-fill"></i> All Stocks Healthy
+                    </span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="text-muted small">
+                            <tr>
+                                <th>Food Dish</th>
+                                <th>Category</th>
+                                <th>Stock On Hand</th>
+                                <th>Low Stock Threshold</th>
+                                <th>Last Restocked</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="inv : ${inventoryList}" th:classappend="${inv.isLowStock() ? 'table-warning' : ''}">
+                                <td class="fw-bold" th:text="${inv.food.name}">Dish Name</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:text="${inv.food.category.name}">Category</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold fs-6" th:text="${inv.stockQuantity + ' units'}">50 units</span>
+                                </td>
+                                <td class="text-muted" th:text="${inv.lowStockThreshold + ' units'}">10 units</td>
+                                <td class="small text-muted" th:text="${inv.lastRestockedAt != null ? #temporals.format(inv.lastRestockedAt, 'MMM dd, HH:mm') : 'N/A'}">Sep 01</td>
+                                <td>
+                                    <span th:if="${inv.isLowStock()}" class="badge bg-danger">Low Stock Warning</span>
+                                    <span th:unless="${inv.isLowStock()}" class="badge bg-success">Optimal</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary-custom"
+                                            data-bs-toggle="modal"
+                                            th:data-bs-target="${'#restockModal' + inv.food.id}">
+                                        <i class="bi bi-plus-circle"></i> Restock
+                                    </button>
+
+                                    <!-- Quick Restock Modal -->
+                                    <div class="modal fade" th:id="${'restockModal' + inv.food.id}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow rounded-4">
+                                                <form th:action="@{/admin/inventory/restock}" method="post">
+                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                    <input type="hidden" name="foodId" th:value="${inv.food.id}">
+                                                    <div class="modal-header border-0">
+                                                        <h5 class="modal-title fw-bold">Replenish Inventory</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p class="small text-muted mb-3">
+                                                            Replenishing stock for <strong><span th:text="${inv.food.name}">Food</span></strong>.
+                                                            Current units on hand: <strong class="text-primary" th:text="${inv.stockQuantity}">10</strong>
+                                                        </p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Units to Add</label>
+                                                            <input type="number" name="additionalQuantity" class="form-control" value="25" min="1" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-0">
+                                                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary-custom btn-sm">Confirm Restock</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

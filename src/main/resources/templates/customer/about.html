@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main :: head('About Us - Foodie')}"></head>
+<body class="bg-light">
+
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+    <div th:replace="~{layout/main :: alerts}"></div>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+                    <span class="text-primary fw-bold text-uppercase small">Our Story</span>
+                    <h2 class="fw-bold mb-4">Passionate About Gourmet Taste & Fast Delivery</h2>
+
+                    <p class="text-muted leading-relaxed">
+                        Founded in 2026, <strong>FoodieExpress</strong> was established with a singular vision: to bring restaurant-quality culinary excellence directly to homes and offices without compromising on temperature, texture, or flavor.
+                    </p>
+
+                    <div class="row g-4 my-4">
+                        <div class="col-md-4 text-center">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 64px; height: 64px;">
+                                <i class="bi bi-award text-primary fs-3"></i>
+                            </div>
+                            <h6 class="fw-bold">Prime Ingredients</h6>
+                            <p class="small text-muted mb-0">100% locally sourced, fresh organic produce and prime cuts.</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 64px; height: 64px;">
+                                <i class="bi bi-speedometer2 text-danger fs-3"></i>
+                            </div>
+                            <h6 class="fw-bold">30-Min Delivery</h6>
+                            <p class="small text-muted mb-0">Dispatched in thermal insulated carriers straight from the oven.</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 64px; height: 64px;">
+                                <i class="bi bi-shield-check text-success fs-3"></i>
+                            </div>
+                            <h6 class="fw-bold">Seamless Platform</h6>
+                            <p class="small text-muted mb-0">Engineered with high security and real-time order tracking.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/main :: footer}"></footer>
+</body>
+</html>

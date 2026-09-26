@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main :: head('Checkout & Payment - Foodie')}"></head>
+<body class="bg-light">
+
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+    <div th:replace="~{layout/main :: alerts}"></div>
+
+    <main class="container py-5">
+        <h2 class="fw-bold mb-4"><i class="bi bi-shield-check text-success"></i> Secure Checkout</h2>
+
+        <form th:action="@{/checkout/place-order}" th:object="${checkoutDto}" method="post">
+            <div class="row g-4">
+                <!-- Delivery & Payment Information -->
+                <div class="col-lg-8">
+                    <!-- Step 1: Delivery Address -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-primary"></i> 1. Delivery Details</h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Delivery Address</label>
+                                <textarea th:field="*{deliveryAddress}" class="form-control" rows="2" placeholder="Street address, apartment, suite" required></textarea>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('deliveryAddress')}" th:errors="*{deliveryAddress}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Contact Phone Number</label>
+                                <input type="text" th:field="*{contactPhone}" class="form-control" placeholder="+1-555-019-2831" required>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactPhone')}" th:errors="*{contactPhone}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Delivery Notes (Optional)</label>
+                                <input type="text" th:field="*{deliveryNotes}" class="form-control" placeholder="Gate code, door ring instructions">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Payment Details (Simulated Card) -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-credit-card-2-front-fill text-primary"></i> 2. Online Payment Gateway</h5>
+                            <span class="badge bg-success-subtle text-success small px-2 py-1"><i class="bi bi-lock-fill"></i> 256-bit Encrypted</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Cardholder Name</label>
+                                <input type="text" th:field="*{cardHolderName}" class="form-control" placeholder="John Doe" required>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('cardHolderName')}" th:errors="*{cardHolderName}"></div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Card Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-credit-card"></i></span>
+                                    <input type="text" id="cardNumber" th:field="*{cardNumber}" class="form-control" placeholder="4242424242424242" maxlength="16" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('cardNumber')}" th:errors="*{cardNumber}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Expiration Date (MM/YY)</label>
+                                <input type="text" id="cardExpiry" th:field="*{cardExpiry}" class="form-control" placeholder="12/28" maxlength="5" required>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('cardExpiry')}" th:errors="*{cardExpiry}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">CVV / CVC (3 Digits)</label>
+                                <input type="password" id="cardCvv" th:field="*{cardCvv}" class="form-control" placeholder="123" maxlength="3" required>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('cardCvv')}" th:errors="*{cardCvv}"></div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info border-0 rounded-3 mt-4 small mb-0">
+                            <i class="bi bi-info-circle-fill me-1"></i> This is a simulated university project gateway. Use any 16 digits (e.g. <code>4242424242424242</code>), valid future MM/YY, and 3-digit CVV.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Review & Place Order Button -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 90px;">
+                        <h5 class="fw-bold mb-3">Order Review</h5>
+
+                        <div class="cart-items-preview mb-3" style="max-height: 220px; overflow-y: auto;">
+                            <div th:each="item : ${cart.items}" class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom small">
+                                <div>
+                                    <strong th:text="${item.quantity + 'x ' + item.foodName}">1x Dish</strong>
+                                </div>
+                                <span class="fw-semibold text-muted" th:text="${'$' + item.subtotal}">$14.99</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Subtotal</span>
+                            <span class="fw-semibold" th:text="${'$' + cart.subtotal}">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Tax (5%)</span>
+                            <span class="fw-semibold" th:text="${'$' + cart.tax}">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 small">
+                            <span class="text-muted">Delivery</span>
+                            <span class="fw-semibold" th:text="${'$' + cart.deliveryFee}">$3.50</span>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fs-5 fw-bold">Total Due</span>
+                            <span class="fs-4 fw-bold text-primary" th:text="${'$' + cart.total}">$0.00</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 fs-6">
+                            <i class="bi bi-check-circle-fill me-1"></i> Pay & Confirm Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <footer th:replace="~{layout/main :: footer}"></footer>
+</body>
+</html>

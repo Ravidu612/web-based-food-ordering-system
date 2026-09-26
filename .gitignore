@@ -1,0 +1,20 @@
+# Target build directory
+target/
+*.class
+
+# IDE configurations
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS / System junk
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Environment / Secrets (if any)
+*.env

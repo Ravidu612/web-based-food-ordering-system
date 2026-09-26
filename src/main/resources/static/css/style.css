@@ -1,0 +1,380 @@
+/* ==========================================================================
+   Foodie Restaurant & Web Ordering System - Master Stylesheet
+   Modern, Clean, Responsive Design System with Bootstrap 5
+   ========================================================================== */
+
+:root {
+    --primary-color: #ff5722;
+    --primary-hover: #e64a19;
+    --primary-light: #ffccbc;
+    --secondary-color: #2c3e50;
+    --accent-color: #ff9800;
+    --success-color: #2e7d32;
+    --warning-color: #f57c00;
+    --danger-color: #d32f2f;
+    --info-color: #0288d1;
+    --dark-bg: #1e293b;
+    --light-bg: #f8fafc;
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --transition-standard: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background-color: var(--light-bg);
+    color: #334155;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* --- Brand & Navigation --- */
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    color: var(--primary-color) !important;
+}
+
+.navbar-brand span {
+    color: var(--secondary-color);
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #475569 !important;
+    padding: 0.5rem 1rem !important;
+    transition: var(--transition-standard);
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary-color) !important;
+}
+
+.cart-badge {
+    font-size: 0.75rem;
+    padding: 0.25em 0.6em;
+    border-radius: 50rem;
+    background-color: var(--primary-color);
+    color: white;
+    vertical-align: top;
+    margin-left: -5px;
+}
+
+/* --- Hero Banner Section --- */
+.hero-section {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 23, 42, 0.95) 100%),
+                url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    border-radius: 0 0 2rem 2rem;
+    margin-bottom: 3rem;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.hero-highlight {
+    color: var(--accent-color);
+}
+
+/* --- Food Dish Cards --- */
+.food-card {
+    border: none;
+    border-radius: 1.25rem;
+    background: #ffffff;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-standard);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.food-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--hover-shadow);
+}
+
+.food-card-img-wrapper {
+    position: relative;
+    height: 200px;
+    background-color: #e2e8f0;
+    overflow: hidden;
+}
+
+.food-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.food-card:hover .food-card-img {
+    transform: scale(1.05);
+}
+
+.badge-promo {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(45deg, #f43f5e, #e11d48);
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.badge-prep {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50rem;
+}
+
+.food-price {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.food-original-price {
+    text-decoration: line-through;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin-left: 0.4rem;
+}
+
+/* --- Buttons & UI Elements --- */
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: 0.6rem 1.4rem;
+    transition: var(--transition-standard);
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+}
+
+.btn-outline-custom {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1.2rem;
+    transition: var(--transition-standard);
+}
+
+.btn-outline-custom:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* --- Category Pills --- */
+.category-pill {
+    display: inline-block;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50rem;
+    background: white;
+    color: #475569;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: var(--transition-standard);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.category-pill:hover, .category-pill.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(255, 87, 34, 0.25);
+}
+
+/* --- Order Status Timeline / Stepper --- */
+.status-timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 2rem 0;
+}
+
+.status-timeline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #e2e8f0;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.timeline-step {
+    position: relative;
+    z-index: 2;
+    background: white;
+    border: 3px solid #cbd5e1;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #64748b;
+    transition: var(--transition-standard);
+}
+
+.timeline-step.completed {
+    border-color: var(--success-color);
+    background: var(--success-color);
+    color: white;
+}
+
+.timeline-step.active {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 0 5px rgba(255, 87, 34, 0.2);
+}
+
+/* --- Admin Back-Office Sidebar --- */
+.admin-wrapper {
+    display: flex;
+    min-height: calc(100vh - 70px);
+}
+
+.admin-sidebar {
+    width: 260px;
+    background: #0f172a;
+    color: #94a3b8;
+    flex-shrink: 0;
+    padding: 1.5rem 0;
+}
+
+.admin-sidebar .sidebar-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.75rem 1.5rem 0.25rem;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.admin-sidebar .sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-standard);
+    border-left: 4px solid transparent;
+}
+
+.admin-sidebar .sidebar-link:hover, .admin-sidebar .sidebar-link.active {
+    background: #1e293b;
+    color: #ffffff;
+    border-left-color: var(--primary-color);
+}
+
+.admin-sidebar .sidebar-link i {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.admin-content {
+    flex: 1;
+    background: #f1f5f9;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+/* --- KPI Summary Metric Cards --- */
+.kpi-card {
+    border: none;
+    border-radius: 1rem;
+    background: white;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    transition: var(--transition-standard);
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--hover-shadow);
+}
+
+.kpi-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-right: 1.25rem;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.kpi-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* --- Footer --- */
+footer {
+    background: #0f172a;
+    color: #94a3b8;
+    padding: 3rem 0 1.5rem;
+    margin-top: 4rem;
+}
+
+footer a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: var(--transition-standard);
+}
+
+footer a:hover {
+    color: var(--primary-color);
+}

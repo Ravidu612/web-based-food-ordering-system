@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main :: head('My Orders - Foodie')}"></head>
+<body class="bg-light">
+
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+    <div th:replace="~{layout/main :: alerts}"></div>
+
+    <main class="container py-5">
+        <h2 class="fw-bold mb-4"><i class="bi bi-bag-check text-primary"></i> Order History</h2>
+
+        <div th:if="${orders != null and !orders.isEmpty()}" class="row g-4">
+            <div th:each="order : ${orders}" class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-3 border-bottom gap-2">
+                        <div>
+                            <span class="text-muted small">Order Reference</span>
+                            <h5 class="fw-bold text-dark mb-0" th:text="${order.orderNumber}">ORD-20260903-1001</h5>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block">Placed On</span>
+                            <span class="small fw-semibold" th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy HH:mm')}">Sep 03, 2026</span>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block">Total</span>
+                            <span class="fw-bold text-primary fs-5" th:text="${'$' + order.totalAmount}">$38.66</span>
+                        </div>
+                        <div>
+                            <span th:switch="${order.orderStatus.name()}">
+                                <span th:case="'DELIVERED'" class="badge bg-success-subtle text-success px-3 py-2 rounded-pill"><i class="bi bi-check2-all"></i> Delivered</span>
+                                <span th:case="'CANCELLED'" class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill"><i class="bi bi-x-circle"></i> Cancelled</span>
+                                <span th:case="'PREPARING'" class="badge bg-warning-subtle text-warning px-3 py-2 rounded-pill"><i class="bi bi-fire"></i> Preparing</span>
+                                <span th:case="'OUT_FOR_DELIVERY'" class="badge bg-info-subtle text-info px-3 py-2 rounded-pill"><i class="bi bi-bicycle"></i> Out for Delivery</span>
+                                <span th:case="*" class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill"><i class="bi bi-clock-history"></i> Confirmed</span>
+                            </span>
+                        </div>
+                        <div>
+                            <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-outline-custom btn-sm">
+                                View Details & Track <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Items Preview -->
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="text-muted small fw-semibold">Dishes:</span>
+                        <span th:each="item, iterStat : ${order.items}" class="badge bg-light text-dark border py-2 px-3 rounded-pill small">
+                            <span th:text="${item.quantity + 'x ' + item.foodName}">1x Burger</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${orders == null or orders.isEmpty()}" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-4">
+            <i class="bi bi-bag-x text-muted display-4 mb-3"></i>
+            <h4 class="fw-bold">No Past Orders Yet</h4>
+            <p class="text-muted small">You haven't placed any food orders with us yet.</p>
+            <div>
+                <a th:href="@{/menu}" class="btn btn-primary-custom px-4 py-2">Explore Menu & Order</a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/main :: footer}"></footer>
+</body>
+</html>
