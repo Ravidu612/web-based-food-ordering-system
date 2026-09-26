@@ -18,4 +18,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     @Query("SELECT DISTINCT i FROM Inventory i JOIN FETCH i.food f LEFT JOIN FETCH f.category WHERE i.stockQuantity <= i.lowStockThreshold")
     List<Inventory> findLowStockItemsWithFoodAndCategory();
+
+    @Query("SELECT i FROM Inventory i WHERE i.stockQuantity <= i.lowStockThreshold")
+    List<Inventory> findLowStockItems();
 }
