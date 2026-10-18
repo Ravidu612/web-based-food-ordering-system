@@ -27,7 +27,7 @@
                     <div class="kpi-card">
                         <div class="kpi-icon bg-danger-subtle text-danger"><i class="bi bi-cart-dash"></i></div>
                         <div>
-                            <div class="kpi-value" th:text="${'$' + (expenseSummary.ingredients ?: '0.00')}">$0.00</div>
+                            <div class="kpi-value" th:text="${'LKR ' + (expenseSummary.ingredients ?: '0.00')}">$0.00</div>
                             <div class="kpi-label">Ingredients (COGS)</div>
                         </div>
                     </div>
@@ -36,7 +36,7 @@
                     <div class="kpi-card">
                         <div class="kpi-icon bg-warning-subtle text-warning"><i class="bi bi-people"></i></div>
                         <div>
-                            <div class="kpi-value" th:text="${'$' + (expenseSummary.labor ?: '0.00')}">$0.00</div>
+                            <div class="kpi-value" th:text="${'LKR ' + (expenseSummary.labor ?: '0.00')}">$0.00</div>
                             <div class="kpi-label">Labour & Wages</div>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                     <div class="kpi-card">
                         <div class="kpi-icon bg-info-subtle text-info"><i class="bi bi-lightning-charge"></i></div>
                         <div>
-                            <div class="kpi-value" th:text="${'$' + (expenseSummary.utilities ?: '0.00')}">$0.00</div>
+                            <div class="kpi-value" th:text="${'LKR ' + (expenseSummary.utilities ?: '0.00')}">$0.00</div>
                             <div class="kpi-label">Utilities & Overheads</div>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                     <div class="kpi-card">
                         <div class="kpi-icon bg-dark text-light"><i class="bi bi-three-dots"></i></div>
                         <div>
-                            <div class="kpi-value" th:text="${'$' + (expenseSummary.other ?: '0.00')}">$0.00</div>
+                            <div class="kpi-value" th:text="${'LKR ' + (expenseSummary.other ?: '0.00')}">$0.00</div>
                             <div class="kpi-label">Other Miscellaneous</div>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
                                         <span th:case="*" class="badge bg-secondary">Other</span>
                                     </span>
                                 </td>
-                                <td class="fw-bold text-danger" th:text="${'$' + expense.amount}">$120.00</td>
+                                <td class="fw-bold text-danger" th:text="${'LKR ' + expense.amount}">$120.00</td>
                                 <td class="small text-muted" th:text="${expense.recordedByAdmin != null ? expense.recordedByAdmin.fullName : 'Admin'}">Admin</td>
                                 <td class="small text-muted" th:text="${#temporals.format(expense.expenseDate, 'MMM dd, yyyy')}">Sep 01, 2026</td>
                                 <td>

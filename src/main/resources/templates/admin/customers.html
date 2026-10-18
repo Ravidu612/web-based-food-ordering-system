@@ -56,7 +56,7 @@
                                 <td class="text-center">
                                     <span class="badge bg-secondary rounded-pill px-3" th:text="${customer.orders != null ? customer.orders.size() : 0}">5</span>
                                 </td>
-                                <td class="fw-semibold text-primary" th:text="${'$' + (customer.orders != null ? #aggregates.sum(customer.orders.![totalAmount]) ?: '0.00' : '0.00')}">$142.50</td>
+                                <td class="fw-semibold text-primary" th:text="${'LKR ' + (customer.orders != null ? #aggregates.sum(customer.orders.![totalAmount]) ?: '0.00' : '0.00')}">$142.50</td>
                                 <td class="small text-muted"
                                     th:text="${customer.createdAt != null ? #temporals.format(customer.createdAt, 'MMM dd, yyyy') : 'N/A'}">Sep 01, 2026</td>
                                 <td>

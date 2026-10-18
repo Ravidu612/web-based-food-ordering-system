@@ -37,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerRepository customerRepository;
     private final CartRepository cartRepository;
     private final SaleRepository saleRepository;
+    private final PaymentRepository paymentRepository;
     private final InventoryService inventoryService;
     private final PaymentService paymentService;
     private final CartService cartService;
@@ -203,6 +204,19 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public long countActiveOrders() {
         return orderRepository.countActiveOrders();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteOrder(Long orderId) {
+        Order order = getOrderById(orderId);
+        if (order.getPayment() != null) {
+            paymentRepository.delete(order.getPayment());
+        }
+        if (order.getSale() != null) {
+            saleRepository.delete(order.getSale());
+        }
+        orderRepository.delete(order);
     }
 
     private OrderResponseDto mapToDto(Order order) {

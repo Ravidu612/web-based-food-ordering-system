@@ -16,4 +16,5 @@ public interface OrderService {
     OrderResponseDto updateOrderStatus(Long orderId, OrderStatus newStatus, String cancellationReason);
     List<OrderResponseDto> getAllOrdersAdmin();
     long countActiveOrders();
+    void deleteOrder(Long orderId);
 }

@@ -70,10 +70,14 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     @Transactional
     public void restoreStock(List<OrderItem> orderItems) {
+        if (orderItems == null) return;
         for (OrderItem item : orderItems) {
-            Inventory inventory = getInventoryByFoodId(item.getFood().getId());
-            inventory.setStockQuantity(inventory.getStockQuantity() + item.getQuantity());
-            inventoryRepository.save(inventory);
+            if (item != null && item.getFood() != null && item.getFood().getId() != null) {
+                inventoryRepository.findByFoodId(item.getFood().getId()).ifPresent(inventory -> {
+                    inventory.setStockQuantity(inventory.getStockQuantity() + item.getQuantity());
+                    inventoryRepository.save(inventory);
+                });
+            }
         }
     }
 }

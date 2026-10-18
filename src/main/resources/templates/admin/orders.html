@@ -45,7 +45,7 @@
                                         <span th:text="${item.quantity + 'x ' + item.foodName}">1x Dish</span>
                                     </div>
                                 </td>
-                                <td class="fw-bold fs-6" th:text="${'$' + order.totalAmount}">$38.66</td>
+                                <td class="fw-bold fs-6" th:text="${'LKR ' + order.totalAmount}">$38.66</td>
                                 <td>
                                     <span th:switch="${order.orderStatus.name()}">
                                         <span th:case="'DELIVERED'" class="badge bg-success">Delivered</span>
@@ -56,18 +56,27 @@
                                     </span>
                                 </td>
                                 <td style="width: 200px;">
-                                    <form th:action="@{/admin/orders/update-status}" method="post" class="d-flex gap-1" th:if="${order.orderStatus.name() != 'DELIVERED' and order.orderStatus.name() != 'CANCELLED'}">
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                        <input type="hidden" name="orderId" th:value="${order.id}">
-                                        <select name="newStatus" class="form-select form-select-sm">
-                                            <option th:each="s : ${allStatuses}" th:value="${s.name()}" th:text="${s.name()}" th:selected="${s == order.orderStatus}"></option>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary-custom btn-sm" title="Save Status">
-                                            <i class="bi bi-arrow-right"></i>
-                                        </button>
-                                    </form>
-                                    <span th:if="${order.orderStatus.name() == 'DELIVERED'}" class="text-success small fw-semibold"><i class="bi bi-check2-circle"></i> Completed</span>
-                                    <span th:if="${order.orderStatus.name() == 'CANCELLED'}" class="text-danger small fw-semibold"><i class="bi bi-slash-circle"></i> Terminated</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <form th:action="@{/admin/orders/update-status}" method="post" class="d-flex gap-1 flex-grow-1" th:if="${order.orderStatus.name() != 'DELIVERED' and order.orderStatus.name() != 'CANCELLED'}">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                            <input type="hidden" name="orderId" th:value="${order.id}">
+                                            <select name="newStatus" class="form-select form-select-sm">
+                                                <option th:each="s : ${allStatuses}" th:value="${s.name()}" th:text="${s.name()}" th:selected="${s == order.orderStatus}"></option>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary-custom btn-sm" title="Save Status">
+                                                <i class="bi bi-arrow-right"></i>
+                                            </button>
+                                        </form>
+                                        <span th:if="${order.orderStatus.name() == 'DELIVERED'}" class="text-success small fw-semibold"><i class="bi bi-check2-circle"></i> Completed</span>
+                                        <span th:if="${order.orderStatus.name() == 'CANCELLED'}" class="text-danger small fw-semibold"><i class="bi bi-slash-circle"></i> Terminated</span>
+
+                                        <form th:action="@{/admin/orders/delete/{id}(id=${order.id})}" method="post" class="d-inline ms-auto" onsubmit="return confirm('Are you sure you want to completely delete this order record from the database?');">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Order from DB">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

@@ -50,8 +50,8 @@
                                 <td>
                                     <span class="badge bg-light text-dark border" th:text="${food.categoryName}">Category</span>
                                 </td>
-                                <td class="fw-bold text-primary" th:text="${'$' + food.price}">$14.99</td>
-                                <td class="text-muted" th:text="${'$' + (food.costPrice ?: '0.00')}">$4.50</td>
+                                <td class="fw-bold text-primary" th:text="${'LKR ' + food.price}">$14.99</td>
+                                <td class="text-muted" th:text="${'LKR ' + (food.costPrice ?: '0.00')}">$4.50</td>
                                 <td>
                                     <span th:classappend="${food.isLowStock ? 'badge bg-warning text-dark' : 'badge bg-success-subtle text-success'}"
                                           th:text="${food.stockQuantity + ' Units'}">50 Units</span>

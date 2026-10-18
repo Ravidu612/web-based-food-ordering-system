@@ -34,7 +34,7 @@
                             <i class="bi bi-currency-dollar"></i>
                         </div>
                         <div>
-                            <div class="kpi-value" th:text="${'$' + (summary.todayRevenue ?: '0.00')}">$0.00</div>
+                            <div class="kpi-value" th:text="${'LKR ' + (summary.todayRevenue ?: '0.00')}">$0.00</div>
                             <div class="kpi-label">Today's Revenue</div>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                             <i class="bi bi-graph-up-arrow"></i>
                         </div>
                         <div>
-                            <div class="kpi-value" th:text="${'$' + (summary.monthNetProfit ?: '0.00')}">$0.00</div>
+                            <div class="kpi-value" th:text="${'LKR ' + (summary.monthNetProfit ?: '0.00')}">$0.00</div>
                             <div class="kpi-label">Monthly Net Profit</div>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
                                     <tr th:each="order : ${recentOrders}">
                                         <td class="fw-bold" th:text="${order.orderNumber}">ORD-1001</td>
                                         <td th:text="${order.customerName}">John Doe</td>
-                                        <td class="fw-bold text-primary" th:text="${'$' + order.totalAmount}">$38.66</td>
+                                        <td class="fw-bold text-primary" th:text="${'LKR ' + order.totalAmount}">$38.66</td>
                                         <td>
                                             <span class="badge bg-primary-subtle text-primary" th:text="${order.orderStatus.name()}">CONFIRMED</span>
                                         </td>
